@@ -105,7 +105,7 @@ def getData(hist):
         })
         BEANS=pandas.concat([BEANS,row],ignore_index=True).reset_index(drop=True)
     # print("==================BEANS DATAFRAME================================")
-    print(type(BEANS))
+    # print(type(BEANS))
     BEANS.to_csv("data.csv")
     # print("==================================================")
     # print("FINISHED")

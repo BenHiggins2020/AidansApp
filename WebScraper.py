@@ -1,4 +1,5 @@
 from datetime import date, datetime
+import math
 from pickletools import long1
 import bs4
 from numpy import NaN
@@ -9,8 +10,8 @@ import dataHandler
 import CsvParser
 # import aidansThing
 
-a = yfinance.Ticker("A")
-
+# a = yfinance.Ticker("A")
+sharpes = pandas.DataFrame()
 period = "5y"
 interval = '1mo'
 interval = '1d'
@@ -36,11 +37,22 @@ def getHist(ticker,interval):
         mData = out[1]
         sharpe = out[0]
     print("sharpe = ",sharpe)
-    
+
+    row = pandas.DataFrame({
+        "Ticker":[ticker],
+        "Sharpe":[sharpe]
+        })
+
+    sharpes = pandas.concat(
+        [sharpes,row],
+        ignore_index=True
+        ).reset_index(drop=True)
+
     return sharpe ,mData
 
-def multipleTickers(tickers,interval):
+def multipleTickers(tickers,interval,loadingBar,root):
     sharpes = pandas.DataFrame()
+    # tickers = ['A' ,'B']
     for ticker in tickers:
         print("=====================",ticker,"==========================")
         a = yfinance.Ticker(str(ticker))
@@ -51,16 +63,44 @@ def multipleTickers(tickers,interval):
             sharpe = CsvParser.calculateStuff(df,ticker)[0]
         else:
             sharpe = CsvParser.calculateStuff(hist,ticker)[0]
+
+        row = pandas.DataFrame({
+            "Ticker":[ticker],
+            "Sharpe":[sharpe],
+            "Modifed Sharpe": [(sharpe * math.sqrt(12))]
+        })
+        sharpes = pandas.concat(
+            [sharpes,row],
+            ignore_index=True
+            ).reset_index(drop=True)
+
+        loadingBar.step()
+        root.update()
+        # loadingBar.
+        
+        # sharpes.append({"Ticker":ticker,"Sharpe":[sharpe]},ignore_index=True)
+
         # row = pandas.DataFrame({
         #     "Ticker": ticker,
         #     "Sharpe":float(sharpe)
         # })
-        sharpes.append({"Ticker":ticker,"Sharpe":[sharpe]},ignore_index=True)
-        sharpes.to_csv("tickersAndsharpes.csv")
-        # sharpes = pandas.concat([sharpes,row],ignore_index=True).reset_index(drop=True)
-        print('COMPLETELY FINISHED')
+        # sharpes.append({"Ticker":ticker,"Sharpe":[sharpe]},ignore_index=True)
+
+
+    sharpes.to_csv("Tickers/_TickersNSharpes.csv")
+    print("Added Tickers and Sharpes")
+
+    print('COMPLETELY FINISHED')
     return sharpes
 
+
+# def postProcessing(output):
+#     print("SHARPES +++++++++++++++++++++++++++++++++ \n\n\n\n\n")
+#     print(output,range(output))
+#     with open("Tickers/TickersNSharpes.csv", "w",newline="") as f:
+#         writer = csv.writer(f)
+#         reader = csv.reader(f)
+        
 
 
 # getHist("BRK.B",'1mo')
