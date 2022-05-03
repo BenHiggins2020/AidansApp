@@ -44,15 +44,82 @@ def txboxListener(val):
     textBox.delete(0,END)
     textBox.insert([0],tickerList.get(tickerList.curselection()[0]))
 
-"""     if(type(val) == list):
+    if(type(val) == list):
         pass
     else: 
         if tickerList.curselection() == NaN:
             textBox.delete(0,END)
             textBox.insert([0],tickerList.get(tickerList.curselection()[0]))
         else:
-            pass """
+            pass 
 
+def createBensTable(): 
+        adjCloseLabel['text'] =t+': Adj Close Data ' 
+
+        adjCloseLabel.grid(column = 4, row = 6)
+        b = bensTable()
+        
+        b.SharpeData.grid(column=4,row=8)
+        b.AdjCloseData.grid(column=4,row=7)
+        # b.modifiedSharpe.grid(column=4,row=9)
+        b.scrollbar.grid(row=0, column=1, sticky='ns')
+        if(b.AdjCloseData.state == DISABLED):
+            print("initial condition",val[0])
+
+            b.AdjCloseData.state = ACTIVE
+            b.SharpeData.state = ACTIVE
+            b.SharpeData.insert("",END,values = (val[0],(val[0]*math.sqrt(12))))
+            for v in val[1]:
+                # i+=1
+                print(v)
+                b.AdjCloseData.insert("",END,values = v)
+            
+        else:
+            b.SharpeData.destroy()
+            b.AdjCloseData.destroy()
+            b = bensTable()   
+            b.AdjCloseData.grid(column=4,row=7)
+            b.scrollbar.grid(row=0, column=1, sticky='ns')
+            b.SharpeData.grid(column=4,row=8)
+            for v in val[1]:
+                # i+=1
+                print(v)
+                b.AdjCloseData.insert("",END,values = v)
+                # print(v)
+            b.SharpeData.insert("",END,values = (val[0],(val[0]*math.sqrt(12))))
+            b.AdjCloseData.columnconfigure(1,pad=0)
+
+        b = bensTable()
+
+        b.SharpeData.grid(column=4,row=8)
+        b.AdjCloseData.grid(column=4,row=7)
+        # b.modifiedSharpe.grid(column=4,row=9)
+        b.scrollbar.grid(row=0, column=1, sticky='ns')
+        if(b.AdjCloseData.state == DISABLED):
+            print("initial condition",val[0])
+
+            b.AdjCloseData.state = ACTIVE
+            b.SharpeData.state = ACTIVE
+            b.SharpeData.insert("",END,values = (val[0],(val[0]*math.sqrt(12))))
+            for v in val[1]:
+                # i+=1
+                # print(v)
+                b.AdjCloseData.insert("",END,values = v)
+            
+        else:
+            b.SharpeData.destroy()
+            b.AdjCloseData.destroy()
+            b = bensTable()   
+            b.AdjCloseData.grid(column=4,row=7)
+            b.scrollbar.grid(row=0, column=1, sticky='ns')
+            b.SharpeData.grid(column=4,row=8)
+            for v in val[1]:
+                # i+=1
+                print(v)
+                b.AdjCloseData.insert("",END,values = v)
+                # print(v)
+            b.SharpeData.insert("",END,values = (val[0],(val[0]*math.sqrt(12))))
+            b.AdjCloseData.columnconfigure(1,pad=0)
     
 
 def searchTicker(ranall = False):
@@ -60,10 +127,9 @@ def searchTicker(ranall = False):
         t = textBox.get()
         val = WebScraper.getHist(t,'1mo')
         #Display Data
-        
         # i = 0
         
-        adjCloseLabel['text'] =t+': Adj Close Data ' 
+        # adjCloseLabel['text'] =t+': Adj Close Data ' 
         adjCloseLabel['text'] =t+': Adj Close Data ' 
 
         adjCloseLabel.grid(column = 4, row = 6)
@@ -74,14 +140,14 @@ def searchTicker(ranall = False):
         # b.modifiedSharpe.grid(column=4,row=9)
         b.scrollbar.grid(row=0, column=1, sticky='ns')
         if(b.AdjCloseData.state == DISABLED):
-            # print("initial condition",val[0])
+            print("initial condition",val[0])
 
             b.AdjCloseData.state = ACTIVE
             b.SharpeData.state = ACTIVE
             b.SharpeData.insert("",END,values = (val[0],(val[0]*math.sqrt(12))))
             for v in val[1]:
                 # i+=1
-                # print(v)
+                print(v)
                 b.AdjCloseData.insert("",END,values = v)
             
         else:
@@ -98,7 +164,11 @@ def searchTicker(ranall = False):
                 # print(v)
             b.SharpeData.insert("",END,values = (val[0],(val[0]*math.sqrt(12))))
             b.AdjCloseData.columnconfigure(1,pad=0)
-    """    else:
+    else:
+
+        t = textBox.get()
+        val = WebScraper.getHist(t,'1mo')
+
         b = bensTable()
 
         b.SharpeData.grid(column=4,row=8)
@@ -106,7 +176,7 @@ def searchTicker(ranall = False):
         # b.modifiedSharpe.grid(column=4,row=9)
         b.scrollbar.grid(row=0, column=1, sticky='ns')
         if(b.AdjCloseData.state == DISABLED):
-            # print("initial condition",val[0])
+            print("initial condition",val[0])
 
             b.AdjCloseData.state = ACTIVE
             b.SharpeData.state = ACTIVE
@@ -129,8 +199,8 @@ def searchTicker(ranall = False):
                 b.AdjCloseData.insert("",END,values = v)
                 # print(v)
             b.SharpeData.insert("",END,values = (val[0],(val[0]*math.sqrt(12))))
-            b.AdjCloseData.columnconfigure(1,pad=0)
- """
+            b.AdjCloseData.columnconfigure(1,pad=0) 
+
     print("Displaying Data")
 
 
@@ -211,6 +281,7 @@ adjCloseLabel = ttk.Label(gui)
 
 class bensTable():
     def __init__(self):
+        print("INITIALIZING BENS TABLE!!!!")
         self.AdjCloseData = ttk.Treeview(gui, columns=1,show="headings")
         self.AdjCloseData.heading(0, text='Adj Close')
         self.AdjCloseData.state = DISABLED

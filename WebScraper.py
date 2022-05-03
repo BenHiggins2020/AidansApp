@@ -42,6 +42,10 @@ def getHist(ticker,interval):
         "Ticker":[ticker],
         "Sharpe":[sharpe]
         })
+        
+    sharpes = pandas.DataFrame()
+
+    print("\n SHARPES?? = "+sharpes)
 
     sharpes = pandas.concat(
         [sharpes,row],
