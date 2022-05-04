@@ -9,13 +9,15 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import tkinter
-from turtle import title
+from turtle import bgcolor, title
 from typing import Literal
 
 from numpy import NaN, pad
 import WebScraper
 import aidansThing
 from art import *
+from tkhtmlview import HTMLLabel
+from tk_html_widgets import *
 
 ##PUBLIC VAL 
 tickers = []
@@ -123,8 +125,11 @@ def createBensTable():
     
 
 def searchTicker(ranall = False):
+    t = textBox.get()
+   
+    
+
     if(ranall):
-        t = textBox.get()
         val = WebScraper.getHist(t,'1mo')
         #Display Data
         # i = 0
@@ -164,6 +169,7 @@ def searchTicker(ranall = False):
                 # print(v)
             b.SharpeData.insert("",END,values = (val[0],(val[0]*math.sqrt(12))))
             b.AdjCloseData.columnconfigure(1,pad=0)
+        
     else:
 
         t = textBox.get()
@@ -201,6 +207,24 @@ def searchTicker(ranall = False):
             b.SharpeData.insert("",END,values = (val[0],(val[0]*math.sqrt(12))))
             b.AdjCloseData.columnconfigure(1,pad=0) 
 
+    divPrice = WebScraper.getPriceUI(t)[1]
+    divName = WebScraper.getPriceUI(t)[0]
+    div_price = HTMLLabel(root, html=str(divPrice))
+    div_name = HTMLLabel(root,html=str(divName))
+    # div_name = HTMLText(root, html=str(divName))#,font=("Arial",15),bg='red')#,width = 10, height = 10)
+    # div_name = HTMLText(root, html=str(divName),width = 20, height = 20,font=("Times New Roman",5))
+    # div_name.config(font=("Arial", 25),width = 20, height = 20,bg="red")
+
+
+    div_name.grid(row=0,column=1)
+    div_name.pack
+    print("div name = ",str(div_name))
+    div_name.config(width=25,height=1)
+    div_price.config(width=15,height=1)
+    # div_name.place(relx = 0.10, rely = 0.01)
+    div_name.place(x=150,y=100)
+    div_price.place(x=150,y=120)
+    # div_price.grid(row = 1,column = 1)
     print("Displaying Data")
 
 
