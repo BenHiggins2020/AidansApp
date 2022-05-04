@@ -1,1 +1,1 @@
-python pip install pyinstaller
+pip install pyinstaller
