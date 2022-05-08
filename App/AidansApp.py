@@ -18,6 +18,7 @@ import aidansThing
 from art import *
 from tkhtmlview import HTMLLabel
 from tk_html_widgets import *
+import CsvParser
 
 ##PUBLIC VAL 
 tickers = []
@@ -36,10 +37,27 @@ print(Art3)
 print("\n\n\n\n\n\n\n\n\n")
 print(Art4)
 
-
-
+RanAll = False
+ranAllVals = []
 def doIt():
-    WebScraper.multipleTickers(loadTickers(),'1mo',loadingBar,root)
+    
+    ranAllVals =WebScraper.multipleTickers(loadTickers(),'1mo',loadingBar,root)
+    # if(checked.get()):
+    #     doCorrelation()
+
+def runCorrelation():
+    print("\n running correlation...")
+    print("Tickers loaded = ",loadTickers())
+    WebScraper.createMegaDF(loadTickers())
+
+    # WebScraper.runCorrelation(ranAllVals[0],ranAllVals[1])
+
+def checkBoxListener():
+    if checked.get() == True:
+        checked.set(False)
+    elif checked.get() == False:
+        checked.set(True)
+    
 
 def txboxListener(val):
     print("text box listener running")
@@ -126,9 +144,8 @@ def createBensTable():
 
 def searchTicker(ranall = False):
     t = textBox.get()
+    checkBoxListener()
    
-    
-
     if(ranall):
         val = WebScraper.getHist(t,'1mo')
         #Display Data
@@ -209,22 +226,21 @@ def searchTicker(ranall = False):
 
     divPrice = WebScraper.getPriceUI(t)[1]
     divName = WebScraper.getPriceUI(t)[0]
+    timestamp = WebScraper.getPriceUI(t)[3]
     div_price = HTMLLabel(root, html=str(divPrice))
     div_name = HTMLLabel(root,html=str(divName))
-    # div_name = HTMLText(root, html=str(divName))#,font=("Arial",15),bg='red')#,width = 10, height = 10)
-    # div_name = HTMLText(root, html=str(divName),width = 20, height = 20,font=("Times New Roman",5))
-    # div_name.config(font=("Arial", 25),width = 20, height = 20,bg="red")
+    timestamp = HTMLLabel(root,html=str(timestamp))
 
 
     div_name.grid(row=0,column=1)
-    div_name.pack
-    print("div name = ",str(div_name))
-    div_name.config(width=25,height=1)
+
+    div_name.config(width=30,height=2)
     div_price.config(width=15,height=1)
-    # div_name.place(relx = 0.10, rely = 0.01)
-    div_name.place(x=150,y=100)
-    div_price.place(x=150,y=120)
-    # div_price.grid(row = 1,column = 1)
+    timestamp.config(width=15,height=1)
+    div_name.place(x=150,y=110)
+    div_price.place(x=150,y=140)
+    timestamp.place(x=150,y=160)
+    CsvParser.correlationTool(t)
     print("Displaying Data")
 
 
@@ -247,7 +263,11 @@ def loadTickers():
         # print(tickerList)
         
     runAllTickerBtn['state'] = ACTIVE
+    correlationCheckBox['state'] = ACTIVE
     return yahooTickers #tickerList.get(0,END)[:]#tickers
+
+
+
 
 #creating app
 
@@ -260,7 +280,7 @@ gui.master.title("Aidans app")
 textBox = Entry(gui)
 textBox.grid(column = 0, row =1,padx=50)
 w = textBox.winfo_width
-print("     width",w)
+# print(" width",w)
 textBox.anchor
 
 #Buttons
@@ -292,8 +312,28 @@ tickerList.anchor
 #Loading Bar 
 
 loadingBar = ttk.Progressbar(root,orient=HORIZONTAL,length=125,mode="determinate",takefocus=True,maximum=500)
-# loadingBar.grid(column=4, row = 9)
-loadingBar.place(x=150,y=140)
+loadingBar.place(x=150,y=275)
+
+# Correlation check box
+
+# checked = IntVar()
+checked = BooleanVar()
+checked.set(True)
+correlationCheckBox = ttk.Checkbutton(root,
+    width=25,
+    text='Run Pearsons Correlation',
+    state=DISABLED,
+    onvalue=False,
+    offvalue=True,
+    command=checkBoxListener    
+    )
+
+correlationCheckBox.place(x=330,y=325)
+
+#Correlation Button 
+
+RunCorrelationButton = ttk.Button(root,text="Correlate Data",state=ACTIVE,command=runCorrelation)
+RunCorrelationButton.place(x=330,y=375)
 
 #Labels
 tickerList_lbl = ttk.Label(gui,text="List of Tickers")
